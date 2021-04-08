@@ -1,4 +1,4 @@
-const player1 = {
+const SCORPION = {
     name: 'SCORPION',
     hp: 70,
     img: 'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',
@@ -7,7 +7,7 @@ const player1 = {
         console.log(this.name + ' Fight...');
     }
 };
-const player2 = {
+const SUBZERO = {
     name: 'SUB-ZERO',
     hp: 80,
     img: 'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
@@ -52,5 +52,5 @@ function createPlayer(plConst, plObject) {
     $root.appendChild($player);
 
 }
-createPlayer('player1', player1);
-createPlayer('player2', player2);
+createPlayer('player1', SCORPION);
+createPlayer('player2', SUBZERO);
