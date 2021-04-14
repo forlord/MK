@@ -86,8 +86,7 @@ function elHP() {
 }
 function renderHP() {
     this.elHP().style.width = this.hp + '%';
-    if (this.hp === 0)
-        gameOver(this);
+   
 }
 function gameOver(player) {
     $randomButton.style.display = 'none';
@@ -137,4 +136,6 @@ $randomButton.addEventListener('click', function () {
     const player = (getRandom(1, 2) == 1) ? player1 : player2;
     player.changeHP(getDamage(30));
     player.renderHP();
+     if (player.hp === 0)
+        gameOver(this);
 });
