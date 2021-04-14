@@ -9,7 +9,10 @@ const player1 = {
     weapon: ['f1', 'f2', 'f3'],
     attack: function () {
         console.log(this.name + ' Fight...');
-    }
+    },
+    changeHP: changeHP,
+    elHP: elHP,
+    renderHP: renderHP
 };
 const player2 = {
     player: 2,
@@ -19,8 +22,13 @@ const player2 = {
     weapon: ['f1', 'f2', 'f3'],
     attack: function () {
         console.log(this.name + ' Fight...');
-    }
+    },
+    changeHP: changeHP,
+    elHP: elHP,
+    renderHP: renderHP
 };
+
+
 
 function createElement(tag, className) {
     const $tag = document.createElement(tag)
@@ -36,10 +44,8 @@ function createPlayer(plObject) {
     const $progressbar = createElement('div', 'progressbar');
     const $life = createElement('div', 'life');
     const $name = createElement('div', 'name');
-
     const $character = createElement('div', 'character');
     const $img = createElement('img');
-
 
     $life.style.width = plObject.hp + '%';
     $name.innerText = plObject.name;
@@ -69,43 +75,67 @@ function resetPlayer(player) {
     $playerLife.style.width = player.hp + '%'
 }
 
-function changeHP() {
-    const player = (getRandom(1, 2) == 1) ? player1 : player2;
-    const $playerLife = document.querySelector('.player' + player.player + ' .life');
-    const damage = getDamage(30);
-    player.hp -= damage;
-    if (player.hp < 0) {
-        player.hp = 0;
-        $playerLife.style.width = player.hp + '%'
-        $randomButton.disabled = true;
-        const name = (player.player === 1) ? player2.name : player1.name;
-        $arenas.appendChild(playerWin(name));
-        if (confirm('Replay?')) {
-            resetPlayer(player1);
-            resetPlayer(player2);
-            removeElement('.loseTitle');
-            $randomButton.disabled = false;
-        }
-        return;
+function changeHP(damage) {
+    this.hp -= damage;
+    if (this.hp < 0) {
+        this.hp = 0;
     }
-    $playerLife.style.width = player.hp + '%'
 }
+function elHP() {
+    return document.querySelector('.player' + this.player + ' .life');
+}
+function renderHP() {
+    this.elHP().style.width = this.hp + '%';
+   
+}
+function gameOver(player) {
+    $randomButton.style.display = 'none';
+    const name = (player.player === 1) ? player2.name : player1.name;
+    $arenas.appendChild(playerWin(name));
+    createReloadButton();
+}
+
 function playerLose(name) {
     const $loseTitle = createElement('div', 'loseTitle');
     $loseTitle.innerText = name + ' lose'
 }
 function playerWin(name) {
     const $loseTitle = createElement('div', 'loseTitle');
-    $loseTitle.innerText = name + ' Win';
+    $loseTitle.innerText = name + ' Wins';
     return $loseTitle;
 }
 function removeElement(className) {
     document.querySelector(className).remove();
 }
 
+function createReloadButton() {
+    const $reloadWrap = createElement('div', 'reloadWrap');
+    const $button = createElement('button', 'button');
+    $button.innerText = 'Restart';
+    $reloadWrap.appendChild($button);
+    $arenas.appendChild($reloadWrap);
+    
+    $reloadWrap.addEventListener('click', function () {
+        /*window.location.reload();
+         но можно красиво все убрать
+         */
+        resetPlayer(player1);
+        resetPlayer(player2);
+        removeElement('.loseTitle');
+        /*$randomButton.disabled = false;*/
+        $randomButton.style.display = 'block';
+        removeElement('.reloadWrap');
+
+    });
+}
+
 $arenas.appendChild(createPlayer(player1));
 $arenas.appendChild(createPlayer(player2));
 
 $randomButton.addEventListener('click', function () {
-    changeHP()
-})
+    const player = (getRandom(1, 2) == 1) ? player1 : player2;
+    player.changeHP(getDamage(30));
+    player.renderHP();
+     if (player.hp === 0)
+        gameOver(this);
+});
