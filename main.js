@@ -1,7 +1,8 @@
 const $arenas = document.querySelector('.arenas');
 const $formFight = document.querySelector('.control');
+const $chat = document.querySelector('.chat');
 // выбор противников, кто Комп, а кто реальный
-let Fighters = {}; 
+let fighters = {};
 
 /*
  const $randomButton = document.querySelector('.button');
@@ -159,8 +160,9 @@ function reInitPlayres() {
 }
 /*Выделим комп красной чертой*/
 function initPlayres() {
-    Fighters = getRandom(1, 2) == 1 ? {enemy: player1, player: player2} : {enemy: player2, player: player1};
-    setBorder(Fighters.enemy.player, '2px solid #f00');
+    fighters = getRandom(1, 2) == 1 ? {enemy: player1, player: player2} : {enemy: player2, player: player1};
+    setBorder(fighters.enemy.player, '2px solid #f00');
+    generateLogs('start', fighters.enemy, fighters.player);
 }
 /*
  $randomButton.addEventListener('click', function () {
@@ -181,19 +183,37 @@ function fight() {
     const damageEnemmy = enemy.defence !== player.hit ? player.value : 0;
     const damagePlayer = player.defence !== enemy.hit ? enemy.value : 0;
 
-    Fighters.enemy.changeHP(damageEnemmy);
-    Fighters.enemy.renderHP();
-    Fighters.player.changeHP(damagePlayer);
-    Fighters.player.renderHP();
-    if (Fighters.player.hp === 0 && Fighters.enemy.hp > 0) {
+    fighters.enemy.changeHP(damageEnemmy);
+    fighters.enemy.renderHP();
+
+    fighters.player.changeHP(damagePlayer);
+    fighters.player.renderHP();
+
+    if (damageEnemmy) {
+        generateLogs('hit', fighters.enemy, fighters.player, -damageEnemmy);
+    } else {
+        generateLogs('defence', fighters.enemy, fighters.player);
+    }
+
+    if (damagePlayer) {
+        generateLogs('hit', fighters.player, fighters.enemy, -damagePlayer);
+    } else {
+        generateLogs('defence', fighters.player, fighters.enemy);
+    }
+
+
+    if (fighters.player.hp === 0 && fighters.enemy.hp > 0) {
         console.log('enemy wins')
-        gameOver(Fighters.enemy);
-    } else if (Fighters.enemy.hp === 0 && Fighters.player.hp > 0) {
+        gameOver(fighters.enemy);
+        generateLogs('end', fighters.enemy, fighters.player);
+    } else if (fighters.enemy.hp === 0 && fighters.player.hp > 0) {
         console.log('player wins')
-        gameOver(Fighters.player);
-    } else if (Fighters.player.hp === 0 && Fighters.enemy.hp === 0) {
+        gameOver(fighters.player);
+        generateLogs('end', fighters.player, fighters.enemy);
+    } else if (fighters.player.hp === 0 && fighters.enemy.hp === 0) {
         console.log('draw')
         gameOver();
+        generateLogs('draw', fighters.enemy, fighters.player);
     }
 
 }
@@ -222,8 +242,52 @@ function playerAttack() {
     return attack;
 }
 
+function generateLogs(type, player1, player2, damage) {
+    //player1 - attack
+    //player2 - protection
+
+    let text = '';
+    let timeLog = '';
+    if (!damage) {
+        damage = '';
+    }
+    let damageStatus = '';
+    let date = new Date();
+    const timeActive = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    timeLog = timeActive + ' - ';
+    switch (type) {
+        case 'start':
+            timeLog = '';
+            text = logs['start'].replace('[time]', timeActive).replace('[player1]', player1.name).replace('[player2]', player2.name);
+            break;
+        case 'hit':
+            text = logs['hit'][getRandom(0, 18)].replace('[playerDefence]', player1.name).replace('[playerKick]', player2.name);
+            damageStatus = `[${player1.hp}/100]`;
+            break;
+        case 'defence':
+            text = logs['defence'][getRandom(0, 8)].replace('[playerDefence]', player1.name).replace('[playerKick]', player2.name);
+            break;
+        case 'draw':
+            timeLog = '';
+            text = logs['draw'].replace('[playerDefence]', player1.name).replace('[playerKick]', player2.name);
+            break;
+
+        case 'end':
+            timeLog = '';
+            text = logs['end'][getRandom(0, 2)].replace('[playerWins]', player1.name).replace('[playerLose]', player2.name);
+            break;
+
+
+    }
+    const el = `<p>${timeLog} ${text} ${damage} ${damageStatus}</p>`;
+    $chat.insertAdjacentHTML('afterbegin', el);
+
+}
+
 $formFight.addEventListener('submit', function (e) {
     e.preventDefault();
+
     fight();
+
 });
 
