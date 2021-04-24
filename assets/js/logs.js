@@ -1,3 +1,4 @@
+import {getRandom} from './random.js';
 export const logs = {
     start: 'Часы показывали [time], когда [player1] и [player2] бросили вызов друг другу.',
     end: [
@@ -37,7 +38,7 @@ export const logs = {
     ],
     draw: 'Ничья - это тоже победа!'
 };
-const getRandom = (min, max) => min + Math.round(Math.random() * (max - min));
+
 const $chat = document.querySelector('.chat');
 export function generateLogs(type, player1, player2, damage) {
     //player1 - attack

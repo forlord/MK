@@ -6,9 +6,7 @@
 
 export const $formFight = document.querySelector('.control');
 export const $arenas = document.querySelector('.arenas');
-export const getDamage = (max) => getRandom(1, max);
 
-export const getRandom = (min, max) => min + Math.round(Math.random() * (max - min));
 
 export const setBorder = (player, style) => {
     const $enemy = document.querySelector('.player' + player + ' .character');
