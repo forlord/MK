@@ -1,4 +1,4 @@
-const logs = {
+export const logs = {
     start: 'Часы показывали [time], когда [player1] и [player2] бросили вызов друг другу.',
     end: [
         'Результат удара [playerWins]: [playerLose] - труп',
@@ -37,3 +37,44 @@ const logs = {
     ],
     draw: 'Ничья - это тоже победа!'
 };
+const getRandom = (min, max) => min + Math.round(Math.random() * (max - min));
+const $chat = document.querySelector('.chat');
+export function generateLogs(type, player1, player2, damage) {
+    //player1 - attack
+    //player2 - protection
+
+    let text = '';
+    let timeLog = '';
+    if (!damage) {
+        damage = '';
+    }
+    let damageStatus = '';
+    let date = new Date();
+    const timeActive = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+    timeLog = timeActive + ' - ';
+    switch (type) {
+        case 'start':
+            timeLog = '';
+            text = logs['start'].replace('[time]', timeActive).replace('[player1]', player1.name).replace('[player2]', player2.name);
+            break;
+        case 'hit':
+            text = logs['hit'][ getRandom(0, (logs['hit'].length - 1)) ].replace('[playerDefence]', player1.name).replace('[playerKick]', player2.name);
+            damageStatus = `[${player1.hp}/100]`;
+            break;
+        case 'defence':
+            text = logs['defence'][getRandom(0, (logs['defence'].length - 1))].replace('[playerDefence]', player1.name).replace('[playerKick]', player2.name);
+            break;
+        case 'draw':
+            timeLog = '';
+            text = logs['draw'].replace('[playerDefence]', player1.name).replace('[playerKick]', player2.name);
+            break;
+
+        case 'end':
+            timeLog = '';
+            text = logs['end'][getRandom(0, (logs['end'].length - 1))].replace('[playerWins]', player1.name).replace('[playerLose]', player2.name);
+            break;
+    }
+    const el = `<p>${timeLog} ${text} ${damage} ${damageStatus}</p>`;
+    $chat.insertAdjacentHTML('afterbegin', el);
+
+}
