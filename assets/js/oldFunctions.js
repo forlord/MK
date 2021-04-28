@@ -4,13 +4,14 @@
  * and open the template in the editor.
  */
 
- const $randomButton = document.querySelector('.button');
+const $randomButton = document.querySelector('.button');
 function gameOverOld(player) {
     $randomButton.style.display = 'none';
     const name = (player.player === 1) ? player2.name : player1.name;
     $arenas.appendChild(playerWin(name));
     createReloadButton();
 }
+export const getDamage = (max) => getRandom(1, max);
 /*
  $randomButton.addEventListener('click', function () {
  const player = (getRandom(1, 2) == 1) ? player1 : player2;
